@@ -24,5 +24,154 @@ namespace ShoppingCart.Areas.Admin.Controllers
             // return view with the list
             return View(pageList);
         }
+        // GET: Admin/Pages/AddPage
+        [HttpGet]
+        public ActionResult AddPage()
+        {
+            return View();
+        }
+        // POST: Admin/Pages/AddPage
+        [HttpPost]
+        public ActionResult AddPage(PagesVM model)
+        {
+            // check model state
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            using (Db db = new Db())
+            {
+                //decalre slug
+                string slug;
+
+                //Init pageDTO
+                PageDTO dto = new PageDTO();
+
+                //DTO Tile
+                dto.Title = model.Title;
+
+                //check for and set slug of needed
+                if(string.IsNullOrWhiteSpace(model.Slug))
+                {
+                    slug = model.Title.Replace(" ", "-").ToLower();
+                } else
+                {
+                    slug = model.Slug.Replace(" ", "-").ToLower();
+                }
+
+                //make sure ttile and slug are unique
+                if (db.Pages.Any(x => x.Title == model.Title) || db.Pages.Any(x => x.Slug == model.Slug))
+                {
+                    ModelState.AddModelError("", "Title and slug already exixts");
+                    return View(model);
+                }
+
+                //DTO rest
+                dto.Slug = slug;
+                dto.Body = model.Body;
+                dto.HashSideBar = model.HashSideBar;
+                dto.Sorting = 100;
+              
+                //Save DTO
+                db.Pages.Add(dto);
+                db.SaveChanges();
+            }
+            //set tempdate message
+            TempData["SM"] = "You have added new page";
+
+            //Redirect
+            return RedirectToAction("AddPage");
+
+        }
+
+
+        // GET :  Admin/Pages/EditPage/id
+        [HttpGet]
+        public ActionResult EditPage(int id)
+        {
+            // declare pageVm
+            PagesVM model;
+
+            using (Db db = new Db())
+            {
+                //Get the page
+                PageDTO dto = db.Pages.Find(id);
+
+                //confirm page exists
+                if(dto == null)
+                {
+                    return Content("Page does not exists");
+                }
+
+                //Initialize the pageVm model
+                model = new PagesVM(dto);
+            }
+
+            // return view with model
+            return View(model);
+        }
+
+        // POST :  Admin/Pages/EditPage/id
+        [HttpPost]
+        public ActionResult EditPage(PagesVM model)
+        {
+            // check model state
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            using (Db db = new Db())
+            {
+                //get page id
+                int id = model.Id;
+
+                //init slug
+                string slug ="home";
+
+                // get the page
+                PageDTO dto = db.Pages.Find(id);
+
+                //DTO Tile
+                dto.Title = model.Title;
+
+                //check for and set slug if needed
+                if(model.Slug != "home")
+                {
+                    if (string.IsNullOrWhiteSpace(model.Slug))
+                    {
+                        slug = model.Title.Replace(" ", "-").ToLower();
+                    }
+                    else
+                    {
+                        slug = model.Slug.Replace(" ", "-").ToLower();
+                    }
+                }
+               
+
+                //make sure ttile and slug are unique
+                if(db.Pages.Where(x=> x.Id != id).Any(x => x.Title == model.Title) ||
+                    db.Pages.Where(x => x.Id != id).Any(x => x.Slug == slug) )
+                {
+                    ModelState.AddModelError("", "Title and slug already exixts");
+                    return View(model);
+                }
+
+                //DTO rest
+                dto.Slug = slug;
+                dto.Body = model.Body;
+                dto.HashSideBar = model.HashSideBar;
+
+                //Save DTO
+                db.SaveChanges();
+            }
+            //set tempdate message
+            TempData["SM"] = "You have Edited page";
+
+            //Redirect
+            return RedirectToAction("EditPage");
+
+        }
     }
 }

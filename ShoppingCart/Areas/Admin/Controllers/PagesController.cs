@@ -200,5 +200,24 @@ namespace ShoppingCart.Areas.Admin.Controllers
             return View(model);
         }
 
+
+        // GET :  Admin/Pages/DeletePage/id
+        [HttpGet]
+        public ActionResult DeletePage(int id)
+        {
+            using (Db db = new Db())
+            {
+                //get the page
+                PageDTO dto = db.Pages.Find(id);
+
+                //remove the page
+                db.Pages.Remove(dto);
+
+                //save
+                db.SaveChanges();
+            }
+            //redirect
+            return RedirectToAction("Index");
+        }
     }
 }

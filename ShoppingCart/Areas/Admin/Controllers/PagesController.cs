@@ -173,5 +173,32 @@ namespace ShoppingCart.Areas.Admin.Controllers
             return RedirectToAction("EditPage");
 
         }
+
+
+        // GET :  Admin/Pages/PageDetails/id
+        [HttpGet]
+        public ActionResult PageDetails(int id)
+        {
+            // view pageVM
+            PagesVM model;
+            
+            using(Db db =new Db())
+            {
+                //get the page
+                PageDTO dto = db.Pages.Find(id);
+
+                //confirm page exixt
+                if(dto == null)
+                {
+                    return Content("page does not exist");
+                }
+
+                //init the pageVm
+                model = new PagesVM(dto);
+            }
+            //return view of model
+            return View(model);
+        }
+
     }
 }

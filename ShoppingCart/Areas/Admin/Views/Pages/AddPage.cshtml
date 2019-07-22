@@ -7,16 +7,16 @@
 <h2>Add Page</h2>
 @if (TempData["SM"] != null)
 {
-<div class="alert alert-success">
-    @TempData["SM"]
-</div>
-    
+    <div class="alert alert-success">
+        @TempData["SM"]
+    </div>
+
 }
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-       
+
 
         <div class="form-group">
             <label class="control-label col-md-2" for="HashSideBar">SideBar</label>
@@ -67,3 +67,11 @@
 <div>
     @Html.ActionLink("Back to Pages", "Index")
 </div>
+
+@section Scripts {
+
+    <script src="~/Scripts/ckeditor/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace("Body");
+    </script>
+}

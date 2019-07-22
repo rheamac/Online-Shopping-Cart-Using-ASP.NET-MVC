@@ -219,5 +219,73 @@ namespace ShoppingCart.Areas.Admin.Controllers
             //redirect
             return RedirectToAction("Index");
         }
+
+        // POST :  Admin/Pages/ReorderPages
+        [HttpPost]
+        public void ReorderPages(int[] id)
+        {
+            using (Db db = new Db()) {
+                // set initial count
+                int count = 1;
+
+                //Declare page DTO
+                PageDTO dto;
+
+                //set sorting for each page
+                foreach (var pageId in id)
+                {
+                    dto = db.Pages.Find(pageId);
+                    dto.Sorting = count;
+
+                    // save
+                    db.SaveChanges();
+
+                    count++;
+                }
+            }
+        }
+
+        // GET :  Admin/Pages/EditSidebar
+        [HttpGet]
+        public ActionResult EditSidebar()
+        {
+            // declare model
+            SidebarVM model;
+            using(Db db = new Db())
+            {
+                //get dto
+                SidebarDTO dto = db.Sidebar.Find(1);
+
+                //init model
+                model = new SidebarVM(dto);
+            }
+
+
+            //return view model
+            return View(model);
+        }
+
+        // POST :  Admin/Pages/EditSidebar
+        [HttpPost]
+        public ActionResult EditSidebar(SidebarVM model)
+        {
+          using(Db db = new Db())
+            {
+                //get the dto
+                SidebarDTO dto = db.Sidebar.Find(1);
+
+                //dto the body
+                dto.Body = model.Body;
+
+                //save
+                db.SaveChanges();
+            }
+
+            //set template message
+            TempData["SM"] = "you have edited the side bar";
+
+            //redirect
+            return RedirectToAction("EditSidebar");
+        }
     }
 }

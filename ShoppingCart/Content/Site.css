@@ -1,1 +1,8 @@
-﻿
+﻿table.sorting tr:not(.home) {
+    cursor: pointer;
+}
+
+.ui-state-hightlight {
+    border: 1px dashed #0094ff;
+
+}
